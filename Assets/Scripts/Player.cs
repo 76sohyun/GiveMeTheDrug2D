@@ -29,11 +29,13 @@ public class Player : MonoBehaviour
      private bool isJumped;
      public bool isGrounded { get; private set; }
      public bool isDash {get; private set;}
+     public bool isClimb{get; private set;}
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
      public readonly int Jump_Hash = Animator.StringToHash("Jump");
      public readonly int Dash_Hash = Animator.StringToHash("Dash");
+     public readonly int Climb_Hash = Animator.StringToHash("Climb");
 
      private void Awake()
      {
@@ -54,6 +56,7 @@ public class Player : MonoBehaviour
           stateMachine.StateDic.Add(Estate.Run, new Player_Run(this));
           stateMachine.StateDic.Add(Estate.Jump, new Player_Jump(this));
           stateMachine.StateDic.Add(Estate.Dash, new Player_Dash(this));
+          stateMachine.StateDic.Add(Estate.Climb, new Player_Climb(this));
           stateMachine.CurState = stateMachine.StateDic[Estate.Idle];
      }
 
@@ -96,12 +99,23 @@ public class Player : MonoBehaviour
           isDash = dash;
      }
 
+     public void SetClimb(bool climb)
+     {
+          isClimb = climb;
+     }
+
      private void OnCollisionEnter2D(Collision2D collision)
      {
           if (collision.gameObject.CompareTag("Ground"))
           {
                isGrounded = true;
                Debug.Log("충돌");
+          }
+
+          if (collision.gameObject.CompareTag("Wall"))
+          {
+               isClimb = true;
+               Debug.Log("벽이에요.");
           }
      }
 
@@ -111,6 +125,12 @@ public class Player : MonoBehaviour
           {
                isGrounded = false; 
                Debug.Log("벗어남");
+          }
+
+          if (collision.gameObject.CompareTag("Wall"))
+          {
+               isClimb = false;
+               Debug.Log("벽에서 벗어남");
           }
      }
 }

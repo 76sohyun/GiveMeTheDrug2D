@@ -16,6 +16,18 @@ public class PlayerState : BaseState
 
     public override void Update()
     {
+        if (!player.isClimb)
+        {
+            if (player.inputX < 0)
+            {
+                player.spriteRenderer.flipX = true;
+            }
+            else if (player.inputX > 0)
+            {
+                player.spriteRenderer.flipX = false;
+            }
+        }
+        
         if (player.GetIsJumped() && player.isGrounded)
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Jump]);
 
@@ -24,6 +36,12 @@ public class PlayerState : BaseState
             Debug.Log("대쉬!");
             player.SetDash(true);
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Dash]);
+        }
+
+        if (player.isClimb)
+        {
+            Debug.Log("벽타요");
+            player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Climb]);
         }
         
     }
@@ -69,15 +87,6 @@ public class Player_Run : PlayerState
         {
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Idle]);
         }
-
-        if (player.inputX < 0)
-        {
-            player.spriteRenderer.flipX = true;
-        }
-        else
-        {
-            player.spriteRenderer.flipX = false;
-        }
     }
 
     public override void FixedUpdate()
@@ -103,15 +112,6 @@ public class Player_Jump : PlayerState
     public override void Update()
     {
         base.Update();
-        if (player.inputX < 0)
-        {
-            player.spriteRenderer.flipX = true;
-        }
-        else
-        {
-            player.spriteRenderer.flipX = false;
-        }
-        
         if(player.isGrounded)
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Idle]);
     }
@@ -135,15 +135,6 @@ public class Player_Dash : PlayerState
 
     public override void Update()
     {
-        if (player.inputX < 0)
-        {
-            player.spriteRenderer.flipX = true;
-        }
-        else
-        {
-            player.spriteRenderer.flipX = false;
-        }
-        
         player.dashTime -= Time.deltaTime;
 
         if (player.dashTime <= 0)
@@ -157,6 +148,29 @@ public class Player_Dash : PlayerState
     public override void FixedUpdate()
     {
         player.rigid.velocity = new Vector2(player.inputX * player.currentSpeed, player.rigid.velocity.y);
+    }
+}
+
+public class Player_Climb : PlayerState
+{
+    public Player_Climb(Player _player) : base(_player) { HasPhysics = true; }
+    
+    public override void Enter()
+    {
+        player.animator.Play(player.Climb_Hash);
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if(player.isGrounded)
+            player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Idle]);
+    }
+
+    public override void FixedUpdate()
+    {
+        float ver = Input.GetAxis("Vertical");
+        player.rigid.velocity = new Vector2(player.rigid.velocity.x, ver * player.MoveSpeed);
     }
     
 }
