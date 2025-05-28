@@ -13,8 +13,10 @@ public class Player : MonoBehaviour
      public float JumpForce => jumpForce;
      [Tooltip("대시 속도")]
      [SerializeField]private float dashSpeed;
+     public float DashSpeed => dashSpeed;
      [Tooltip("대시 지속 시간")]
      [SerializeField]private float defaultTime;
+     public float DefaultTime => defaultTime;
      
      public StateMachine stateMachine { get; private set; }
      public Animator animator { get; private set; }
@@ -22,11 +24,11 @@ public class Player : MonoBehaviour
      public Rigidbody2D rigid { get; private set; }
      private Vector2 inputVec;
      public float inputX { get; private set; }
-     private float dashTime;
-     private float currentSpeed;
+     public float dashTime { get;  set; }
+     public float currentSpeed {get; set;}
      private bool isJumped;
      public bool isGrounded { get; private set; }
-     private bool isDash;
+     public bool isDash {get; private set;}
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
@@ -42,6 +44,7 @@ public class Player : MonoBehaviour
           animator = GetComponent<Animator>();
           spriteRenderer = GetComponent<SpriteRenderer>();
           rigid = GetComponent<Rigidbody2D>();
+          currentSpeed = moveSpeed;
      }
 
      private void StateMachineInit()
@@ -50,15 +53,16 @@ public class Player : MonoBehaviour
           stateMachine.StateDic.Add(Estate.Idle, new Player_Idle(this));
           stateMachine.StateDic.Add(Estate.Run, new Player_Run(this));
           stateMachine.StateDic.Add(Estate.Jump, new Player_Jump(this));
-          //stateMachine.StateDic.Add(Estate.Dash, new);
+          stateMachine.StateDic.Add(Estate.Dash, new Player_Dash(this));
           stateMachine.CurState = stateMachine.StateDic[Estate.Idle];
      }
 
      private void Update()
      {
           inputX = Input.GetAxisRaw("Horizontal");
-          if (Input.GetKeyDown(KeyCode.Space))
+          if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
           {
+               Debug.Log("점프!");
                isJumped = true;
           }
           stateMachine.Update();
@@ -85,6 +89,11 @@ public class Player : MonoBehaviour
      public void SetGrounded(bool grounded)
      {
           isGrounded = grounded;
+     }
+
+     public void SetDash(bool dash)
+     {
+          isDash = dash;
      }
 
      private void OnCollisionEnter2D(Collision2D collision)

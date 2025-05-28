@@ -18,6 +18,14 @@ public class PlayerState : BaseState
     {
         if (player.GetIsJumped() && player.isGrounded)
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Jump]);
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !player.isDash)
+        {
+            Debug.Log("대쉬!");
+            player.SetDash(true);
+            player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Dash]);
+        }
+        
     }
 
     public override void Exit(){}
@@ -94,6 +102,7 @@ public class Player_Jump : PlayerState
 
     public override void Update()
     {
+        base.Update();
         if (player.inputX < 0)
         {
             player.spriteRenderer.flipX = true;
@@ -111,4 +120,43 @@ public class Player_Jump : PlayerState
     {
         player.rigid.velocity = new Vector2(player.inputX * player.MoveSpeed, player.rigid.velocity.y);
     }
+}
+
+public class Player_Dash : PlayerState
+{
+    public Player_Dash(Player _player) : base(_player) { HasPhysics = true; }
+    
+    public override void Enter()
+    {
+        player.animator.Play(player.Dash_Hash);
+        player.currentSpeed = player.DashSpeed;
+        player.dashTime = player.DefaultTime;
+    }
+
+    public override void Update()
+    {
+        if (player.inputX < 0)
+        {
+            player.spriteRenderer.flipX = true;
+        }
+        else
+        {
+            player.spriteRenderer.flipX = false;
+        }
+        
+        player.dashTime -= Time.deltaTime;
+
+        if (player.dashTime <= 0)
+        {
+            player.currentSpeed = player.MoveSpeed;
+            player.SetDash(false);
+            player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Idle]);
+        }
+    }
+
+    public override void FixedUpdate()
+    {
+        player.rigid.velocity = new Vector2(player.inputX * player.currentSpeed, player.rigid.velocity.y);
+    }
+    
 }
