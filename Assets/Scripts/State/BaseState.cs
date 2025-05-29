@@ -13,5 +13,5 @@ public abstract class BaseState
 
 public enum Estate
 {
-    Idle, Run, Jump, Dash, Climb
+    Idle, Run, Jump, Dash, Climb, ClimbIdle, CeilingClimb, CeilingIdle, Attack1, Attack2, Attack3, DroneIdle
 }

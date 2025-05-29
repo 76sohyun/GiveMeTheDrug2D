@@ -17,7 +17,32 @@ public class Player : MonoBehaviour
      [Tooltip("대시 지속 시간")]
      [SerializeField]private float defaultTime;
      public float DefaultTime => defaultTime;
+     [Header("Animation Settings")]
+     [Tooltip("FX")]
+     [SerializeField]private GameObject fx;
+     public GameObject FxObj => fx;
+     [Header("Attack Settings")]
+     [Tooltip("공격 시간")] 
+     [SerializeField] private float attackCoolTime;
+     public float AttackCoolTime
+     {
+          get => attackCoolTime;
+          set => attackCoolTime = value;
+     }
+     [Tooltip("공격 대시 속도")]
+     [SerializeField]private float attackDashSpeed;
+     public float AttackDashSpeed => attackDashSpeed;
+     [Tooltip("공격 대시 지속 시간")]
+     [SerializeField]private float attackdefaultTime;
+     public float AttackDefaultTime => attackdefaultTime;
      
+     private float attackTime;
+     public float AttackTime
+     {
+          get => attackTime;
+          set => attackTime = value;
+     }
+     public SpriteRenderer sr { get; private set; }
      public StateMachine stateMachine { get; private set; }
      public Animator animator { get; private set; }
      public SpriteRenderer spriteRenderer {get; private set;}
@@ -26,16 +51,27 @@ public class Player : MonoBehaviour
      public float inputX { get; private set; }
      public float dashTime { get;  set; }
      public float currentSpeed {get; set;}
+     public float attackDashTime { get;  set; }
+     public int AttackStep { get; set; }
+     
      private bool isJumped;
      public bool isGrounded { get; private set; }
      public bool isDash {get; private set;}
      public bool isClimb{get; private set;}
+     public bool isHang {get; private set;}
+     public bool isAttack {get; private set;}
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
      public readonly int Jump_Hash = Animator.StringToHash("Jump");
      public readonly int Dash_Hash = Animator.StringToHash("Dash");
      public readonly int Climb_Hash = Animator.StringToHash("Climb");
+     public readonly int ClimbIdle_Hash = Animator.StringToHash("ClimbIdle");
+     public readonly int CeilingClimb_Hash = Animator.StringToHash("CeilingClimb");
+     public readonly int CeilingIdle_Hash = Animator.StringToHash("CeilingIdle");
+     public readonly int Attack1_Hash = Animator.StringToHash("Attack1");
+     public readonly int Attack2_Hash = Animator.StringToHash("Attack2");
+     public readonly int Attack3_Hash = Animator.StringToHash("Attack3");
 
      private void Awake()
      {
@@ -46,6 +82,7 @@ public class Player : MonoBehaviour
           animator = GetComponent<Animator>();
           spriteRenderer = GetComponent<SpriteRenderer>();
           rigid = GetComponent<Rigidbody2D>();
+          sr = FxObj.GetComponent<SpriteRenderer>();
           currentSpeed = moveSpeed;
      }
 
@@ -57,6 +94,12 @@ public class Player : MonoBehaviour
           stateMachine.StateDic.Add(Estate.Jump, new Player_Jump(this));
           stateMachine.StateDic.Add(Estate.Dash, new Player_Dash(this));
           stateMachine.StateDic.Add(Estate.Climb, new Player_Climb(this));
+          stateMachine.StateDic.Add(Estate.ClimbIdle, new Player_ClimbIdle(this));
+          stateMachine.StateDic.Add(Estate.CeilingClimb, new Player_CeilingClimb(this));
+          stateMachine.StateDic.Add(Estate.CeilingIdle, new Player_CeilingIdle(this));
+          stateMachine.StateDic.Add(Estate.Attack1, new Player_Attack1(this));
+          stateMachine.StateDic.Add(Estate.Attack2, new Player_Attack2(this));
+          stateMachine.StateDic.Add(Estate.Attack3, new Player_Attack3(this));
           stateMachine.CurState = stateMachine.StateDic[Estate.Idle];
      }
 
@@ -68,6 +111,19 @@ public class Player : MonoBehaviour
                Debug.Log("점프!");
                isJumped = true;
           }
+          if (Input.GetKeyDown(KeyCode.LeftShift) && !isDash)
+          {
+               Debug.Log("대쉬!");
+               isDash = true;
+          }
+
+          if (Input.GetKeyDown(KeyCode.Mouse1) && !isAttack)
+          {
+               Debug.Log("공격1!");
+               isAttack = true;
+               
+          }
+          
           stateMachine.Update();
      }
 
@@ -104,6 +160,11 @@ public class Player : MonoBehaviour
           isClimb = climb;
      }
 
+     public void SetHang(bool hang)
+     {
+          isHang = hang;
+     }
+
      private void OnCollisionEnter2D(Collision2D collision)
      {
           if (collision.gameObject.CompareTag("Ground"))
@@ -117,6 +178,13 @@ public class Player : MonoBehaviour
                isClimb = true;
                Debug.Log("벽이에요.");
           }
+
+          if (collision.gameObject.CompareTag("HangableWall"))
+          {
+               isHang = true;
+          }
+          
+         // if(collision.gameObject.CompareTag("Monster"))
      }
 
      private void OnCollisionExit2D(Collision2D collision)
@@ -124,7 +192,6 @@ public class Player : MonoBehaviour
           if (collision.gameObject.CompareTag("Ground"))
           {
                isGrounded = false; 
-               Debug.Log("벗어남");
           }
 
           if (collision.gameObject.CompareTag("Wall"))
@@ -132,5 +199,13 @@ public class Player : MonoBehaviour
                isClimb = false;
                Debug.Log("벽에서 벗어남");
           }
+
+          if (collision.gameObject.CompareTag("HangableWall"))
+          {
+               isHang = false;
+               Debug.Log("벗어남");
+          }
      }
+     
+     
 }
