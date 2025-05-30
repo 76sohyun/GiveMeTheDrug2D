@@ -17,6 +17,9 @@ public class Player : MonoBehaviour
      [Tooltip("대시 지속 시간")]
      [SerializeField]private float defaultTime;
      public float DefaultTime => defaultTime;
+     [Tooltip("몬스터 대시 스피드")]
+     [SerializeField] private float monsterDashSpeed;
+     public float MonsterDashSpeed => monsterDashSpeed;
      [Header("Animation Settings")]
      [Tooltip("FX")]
      [SerializeField]private GameObject fx;
@@ -36,6 +39,14 @@ public class Player : MonoBehaviour
      [SerializeField]private float attackdefaultTime;
      public float AttackDefaultTime => attackdefaultTime;
      
+     public enum DashType
+     {
+          Normal,
+          Monster
+     }
+     public DashType curDashType { get; private set; }
+     public Transform targetMonster { get; set; }
+     public PlayerLay _playerLay{get; private set;}
      private float attackTime;
      public float AttackTime
      {
@@ -60,6 +71,8 @@ public class Player : MonoBehaviour
      public bool isClimb{get; private set;}
      public bool isHang {get; private set;}
      public bool isAttack {get; private set;}
+     public bool isSlash {get; private set;}
+     public bool isLocked {get; private set;}
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
@@ -72,6 +85,7 @@ public class Player : MonoBehaviour
      public readonly int Attack1_Hash = Animator.StringToHash("Attack1");
      public readonly int Attack2_Hash = Animator.StringToHash("Attack2");
      public readonly int Attack3_Hash = Animator.StringToHash("Attack3");
+     public readonly int Slash_Hash = Animator.StringToHash("Slash");
 
      private void Awake()
      {
@@ -83,6 +97,7 @@ public class Player : MonoBehaviour
           spriteRenderer = GetComponent<SpriteRenderer>();
           rigid = GetComponent<Rigidbody2D>();
           sr = FxObj.GetComponent<SpriteRenderer>();
+          _playerLay = GetComponent<PlayerLay>();
           currentSpeed = moveSpeed;
      }
 
@@ -100,6 +115,7 @@ public class Player : MonoBehaviour
           stateMachine.StateDic.Add(Estate.Attack1, new Player_Attack1(this));
           stateMachine.StateDic.Add(Estate.Attack2, new Player_Attack2(this));
           stateMachine.StateDic.Add(Estate.Attack3, new Player_Attack3(this));
+          stateMachine.StateDic.Add(Estate.Slash, new Player_Slash(this));
           stateMachine.CurState = stateMachine.StateDic[Estate.Idle];
      }
 
@@ -114,14 +130,13 @@ public class Player : MonoBehaviour
           if (Input.GetKeyDown(KeyCode.LeftShift) && !isDash)
           {
                Debug.Log("대쉬!");
-               isDash = true;
+               SetDash(true, DashType.Normal);
           }
 
           if (Input.GetKeyDown(KeyCode.Mouse1) && !isAttack)
           {
                Debug.Log("공격1!");
                isAttack = true;
-               
           }
           
           stateMachine.Update();
@@ -150,9 +165,10 @@ public class Player : MonoBehaviour
           isGrounded = grounded;
      }
 
-     public void SetDash(bool dash)
+     public void SetDash(bool dash, DashType dashType)
      {
           isDash = dash;
+          curDashType = dashType;
      }
 
      public void SetClimb(bool climb)
@@ -163,6 +179,23 @@ public class Player : MonoBehaviour
      public void SetHang(bool hang)
      {
           isHang = hang;
+     }
+
+     public void SetSlash(bool slash)
+     {
+          isSlash = slash;
+     }
+
+     public void SetLock(bool locked)
+     {
+          isLocked = locked;
+     }
+
+     public void SlashEnd()
+     {
+          stateMachine.ChangeState(stateMachine.StateDic[Estate.Idle]);
+          isSlash = false;
+          Debug.Log("SlashEnd");
      }
 
      private void OnCollisionEnter2D(Collision2D collision)
@@ -183,8 +216,12 @@ public class Player : MonoBehaviour
           {
                isHang = true;
           }
-          
-         // if(collision.gameObject.CompareTag("Monster"))
+
+          if (collision.gameObject.CompareTag("Monster") && isSlash)
+          {
+               isSlash = true;
+               Debug.Log("슬래시공격!!!!!!!!");
+          }
      }
 
      private void OnCollisionExit2D(Collision2D collision)
@@ -204,6 +241,11 @@ public class Player : MonoBehaviour
           {
                isHang = false;
                Debug.Log("벗어남");
+          }
+
+          if (collision.gameObject.CompareTag("Monster") && isSlash)
+          {
+               isSlash = false;
           }
      }
      

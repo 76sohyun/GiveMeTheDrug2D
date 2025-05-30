@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   returnPool: {fileID: 0}
-  returnTime: 3
+  returnTime: 1
   rigid: {fileID: 2914557964017117513}
 --- !u!114 &-5284135501225164993
 MonoBehaviour:

@@ -47,6 +47,11 @@ public class Drone_Idle : DroneState
         {
             drone.rigid.velocity = drone.patrolVec * drone.MoveSpeed;   
         }
+
+        if (drone.isStoped)
+        {
+            drone.rigid.velocity = Vector2.zero;
+        }
     }
     public override void Exit(){}
 }

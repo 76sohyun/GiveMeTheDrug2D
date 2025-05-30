@@ -7,17 +7,18 @@ TagManager:
   - Ground
   - Wall
   - HangableWall
+  - Monster
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Drone
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Monster
+  - Bullet
+  - Wall
   - 
   - 
   - 

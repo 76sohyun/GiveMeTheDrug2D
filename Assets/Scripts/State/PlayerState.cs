@@ -7,7 +7,7 @@ using UnityEngine;
 public class PlayerState : BaseState
 {
     protected Player player;
-
+    
     public PlayerState(Player _player)
     {
         player = _player;
@@ -139,8 +139,29 @@ public class Player_Dash : PlayerState
         if (player.dashTime <= 0)
         {
             player.currentSpeed = player.MoveSpeed;
-            player.SetDash(false);
+            player.SetDash(false,Player.DashType.Normal);
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Idle]);
+            player.SetLock(false);
+        }
+        
+        if (player._playerLay.isdash && player.targetMonster != null)
+        {
+            float MonsterDistance = Vector2.Distance(player.transform.position, player.targetMonster.transform.position);
+            Vector2 direction = (player.targetMonster.position - player.transform.position).normalized;
+            player.transform.Translate(direction * player.MonsterDashSpeed * Time.deltaTime);
+
+            if (MonsterDistance < 1f)
+            {
+                player.transform.position = player.targetMonster.transform.position;
+                player.SetLock(true);
+                player.rigid.velocity = Vector2.zero;
+                player.rigid.gravityScale = 0f;
+                player.SetDash(false,Player.DashType.Monster);
+                player._playerLay.isdash = false;
+                player.targetMonster = null;
+                Debug.Log("슬래시 진입");
+                player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Slash]);
+            }
         }
     }
 
@@ -385,4 +406,32 @@ public class Player_Attack3 : PlayerState
     }
 
     public override void Exit(){}
+}
+
+public class Player_Slash : PlayerState
+{
+    public Player_Slash(Player _player) : base(_player) { HasPhysics = true; }
+
+    public override void Enter()
+    {
+        player.animator.Play(player.Slash_Hash);
+        Debug.Log("Slash에 진입");
+        player.SetSlash(true);
+        float direction = player.spriteRenderer.flipX ? -1f : 1f;
+        
+    }
+
+    public override void Update()
+    {
+        if (!player.isSlash)
+        {
+            player.SetSlash(true);
+        }
+    }
+
+    public override void Exit()
+    {
+        player.SetSlash(false);
+        player.rigid.gravityScale = 3f;
+    }
 }

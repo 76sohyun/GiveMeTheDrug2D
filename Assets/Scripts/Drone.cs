@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Drone : MonoBehaviour
@@ -20,6 +21,7 @@ public class Drone : MonoBehaviour
     public Vector2 patrolVec{get; private set;}
     private SpriteRenderer spriteRenderer;
     public bool isWaited{get; private set;}
+    public bool isStoped{get; private set;}
     
     public readonly int DronIdle_Hash = Animator.StringToHash("DroneIdle");
     
@@ -98,4 +100,20 @@ public class Drone : MonoBehaviour
         Gizmos.color = Color.red;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            Debug.Log("부딫힘");
+            isStoped = true;
+        }
+    }
+    
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            isStoped = false;
+        }
+    }
 }

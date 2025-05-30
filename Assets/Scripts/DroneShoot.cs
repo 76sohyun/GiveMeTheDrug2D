@@ -56,11 +56,10 @@ public class DroneShoot : MonoBehaviour
     
     public void Fire(Vector2 targetPos)
     {
-        PooledObject instance = bulletPool.GetPool(muzzlePoint.position,Quaternion.identity);
+        PooledObject instance = bulletPool.GetPool((Vector2)muzzlePoint.position + Vector2.up * 0.5f ,Quaternion.LookRotation(targetPos));
         Rigidbody2D bulletRigidBody = instance.GetComponent<Rigidbody2D>();
         
         Vector2 dir = (targetPos - (Vector2)muzzlePoint.position).normalized;
         bulletRigidBody.velocity = dir * bulletSpeed;
-        Debug.Log($"총알 velocity: {bulletRigidBody.velocity}");
     }
 }
