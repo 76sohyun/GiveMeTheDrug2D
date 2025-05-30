@@ -7,7 +7,6 @@ public class DroneShoot : MonoBehaviour
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform muzzlePoint;
     [SerializeField] ObjectPool bulletPool;
-    [Range(10,30)]
     [SerializeField] float bulletSpeed;
     [SerializeField] int bulletCount;
     [SerializeField] float timeBetweenBullets;

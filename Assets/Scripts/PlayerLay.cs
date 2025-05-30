@@ -22,6 +22,7 @@ public class PlayerLay : MonoBehaviour
     
     private void Update()
     {
+        _player.AttackCollider();
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         

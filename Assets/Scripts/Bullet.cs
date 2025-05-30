@@ -21,6 +21,9 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GetComponent<PooledObject>().ReturnPool();
-        Debug.Log("아야");
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Destroy(gameObject);
+        }
     }
 }

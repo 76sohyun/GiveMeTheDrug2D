@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -33,11 +35,14 @@ public class Player : MonoBehaviour
           set => attackCoolTime = value;
      }
      [Tooltip("공격 대시 속도")]
-     [SerializeField]private float attackDashSpeed;
+     [SerializeField] private float attackDashSpeed;
      public float AttackDashSpeed => attackDashSpeed;
      [Tooltip("공격 대시 지속 시간")]
-     [SerializeField]private float attackdefaultTime;
+     [SerializeField] private float attackdefaultTime;
      public float AttackDefaultTime => attackdefaultTime;
+     [SerializeField] private Transform attackPos;
+     [SerializeField] private Vector2 boxSize;
+     [SerializeField] private Vector2 offset;
      
      public enum DashType
      {
@@ -64,6 +69,7 @@ public class Player : MonoBehaviour
      public float currentSpeed {get; set;}
      public float attackDashTime { get;  set; }
      public int AttackStep { get; set; }
+     
      
      private bool isJumped;
      public bool isGrounded { get; private set; }
@@ -136,6 +142,7 @@ public class Player : MonoBehaviour
           if (Input.GetKeyDown(KeyCode.Mouse1) && !isAttack)
           {
                Debug.Log("공격1!");
+               AttackCollider();
                isAttack = true;
           }
           
@@ -145,6 +152,22 @@ public class Player : MonoBehaviour
      private void FixedUpdate()
      {
           stateMachine.FixedUpdate();
+     }
+
+     public void AttackCollider()
+     {
+          Vector2 attackVec = attackPos.position;
+
+          if (spriteRenderer.flipX)
+          {
+               attackVec.x = attackPos.position.x - (attackPos.localScale.x * 2);
+          }
+
+          Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(attackVec, boxSize, 0);
+          foreach (Collider2D collider2D in collider2Ds)
+          {
+               Debug.Log(collider2D.tag);
+          }
      }
 
      public bool GetIsJumped()
@@ -196,6 +219,20 @@ public class Player : MonoBehaviour
           stateMachine.ChangeState(stateMachine.StateDic[Estate.Idle]);
           isSlash = false;
           Debug.Log("SlashEnd");
+     }
+
+     private void OnDrawGizmos()
+     {
+          if (attackPos == null || spriteRenderer == null) return;
+
+          Vector2 attackVec = attackPos.position;
+
+          if (spriteRenderer.flipX)
+          {
+               attackVec.x = attackPos.position.x - (attackPos.localScale.x * 2);
+          }
+          Gizmos.color = Color.blue;
+          Gizmos.DrawWireCube(attackVec, boxSize);
      }
 
      private void OnCollisionEnter2D(Collision2D collision)
