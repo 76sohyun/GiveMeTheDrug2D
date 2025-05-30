@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: DefaultCompany
   productName: GiveMeTheDrug
-  defaultCursor: {fileID: 2800000, guid: 3caf20c77444bd64ea73600ce6eeca6a, type: 3}
+  defaultCursor: {fileID: 2800000, guid: 13741efa71b841e499c3e1ca9bf93dc7, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1

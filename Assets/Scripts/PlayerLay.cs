@@ -5,10 +5,12 @@ using UnityEngine;
 public class PlayerLay : MonoBehaviour
 {
     [SerializeField] private float MaxDistance;
-    private Vector3 MousePosition;
     [SerializeField]private LayerMask _layerMask;
+    [SerializeField] private Texture2D MonsterCursor;
+    private Vector3 MousePosition;
     private Player _player;
     public bool isdash{get; set;}
+    private bool isMonster = false;
 
     private void Awake()
     {
@@ -28,11 +30,27 @@ public class PlayerLay : MonoBehaviour
         
         Vector2 direction = (mousePos - transform.position).normalized;
         Debug.DrawRay(transform.position, direction * MaxDistance, Color.green);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, MaxDistance, _layerMask);
+
+        if (hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Monster"))
+        {
+            if (!isMonster)
+            {
+                isMonster = true;
+                Cursor.SetCursor(MonsterCursor, Vector2.zero, CursorMode.Auto);
+            }
+        }
+        else
+        {
+            if (isMonster)
+            {
+                isMonster = false;
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            }
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, MaxDistance, _layerMask);
-        
             if (hit.collider != null)
             {
                 Debug.Log(hit.collider.gameObject.name);
