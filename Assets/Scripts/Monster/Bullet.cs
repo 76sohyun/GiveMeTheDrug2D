@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     private Rigidbody2D rigid;
+    [SerializeField] private int damage;
 
     private void Awake()
     {
@@ -23,7 +24,12 @@ public class Bullet : MonoBehaviour
         GetComponent<PooledObject>().ReturnPool();
         if (collision.gameObject.CompareTag("Player"))
         {
-            Destroy(gameObject);
+            Player hitPlayer = collision.gameObject.GetComponent<Player>();
+            if (hitPlayer != null)
+            {
+                hitPlayer.OnDamage(damage);
+                Debug.Log(hitPlayer.CurHealth);   
+            }
         }
     }
 }

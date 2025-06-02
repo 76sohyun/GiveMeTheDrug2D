@@ -49,6 +49,7 @@ public class Player : MonoBehaviour
      [SerializeField] private Vector2 boxSize;
      [SerializeField] private Vector2 offset;
      [SerializeField] private LayerMask wallMask;
+     [SerializeField] private float healTime;
      
      public enum DashType
      {
@@ -157,6 +158,7 @@ public class Player : MonoBehaviour
           }
 
           HangableRay();
+          Heal();
           
           stateMachine.Update();
      }
@@ -165,25 +167,27 @@ public class Player : MonoBehaviour
      {
           stateMachine.FixedUpdate();
      }
-
-      private void Heal()
-      {
-           //플레이어는 체력이 7미만으로 내려가면
-           if (CurHealth < MaxHealth)
-           {
-                //10초마다 1씩 채워진다.
-                StartCoroutine(HealSpeed());
-           }
-           
-      }
-
-     private IEnumerator HealSpeed()
+     
+     private void Heal()
      {
-          yield return new WaitForSeconds(10f);
-          CurHealth++;
+          if (CurHealth < MaxHealth)
+          {
+               healTime += Time.deltaTime;
+               if (healTime >= 10f)
+               {
+                    CurHealth++;
+                    healTime = 0f;
+                    Debug.Log("체력회복");
+               }
+          }
+          else
+          {
+               healTime = 0f;
+          }
      }
+     
 
-     private void OnDamage(int damage)
+     public void OnDamage(int damage)
      {
           CurHealth -= damage;
 

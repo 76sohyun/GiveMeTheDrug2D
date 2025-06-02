@@ -27,10 +27,8 @@ public class HpbarUI : MonoBehaviour
             {
                 player.CurHealth = 0;
             }
-            imsi = (float) player.CurHealth / (float)player.maxHealth;
         }
-        
-        if(player.CurHealth < player.maxHealth)
+        imsi = (float) player.CurHealth / (float)player.maxHealth;
         HandleHp();
     }
 
