@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - HangableWall
   - Monster
+  - Car
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Wall
   - HangableWall
   - Ground
-  - 
+  - Car
   - 
   - 
   - 
