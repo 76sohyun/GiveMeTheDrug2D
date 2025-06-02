@@ -25,10 +25,10 @@ public class PlayerLay : MonoBehaviour
     private void Update()
     {
         _player.AttackCollider();
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePos.z = 0;
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         
-        Vector2 direction = (mousePos - transform.position).normalized;
+        Vector2 direction = (mouseWorldPos - transform.position).normalized;
+        
         Debug.DrawRay(transform.position, direction * MaxDistance, Color.green);
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, MaxDistance, _layerMask);
 

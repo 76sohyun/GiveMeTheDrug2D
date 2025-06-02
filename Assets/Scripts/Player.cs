@@ -43,6 +43,12 @@ public class Player : MonoBehaviour
      [SerializeField] private Transform attackPos;
      [SerializeField] private Vector2 boxSize;
      [SerializeField] private Vector2 offset;
+     [SerializeField] private float slidingSpeed;
+     public float SlidingSpeed => slidingSpeed;
+     [SerializeField] private float wallJumpForce;
+     public float WallJumpForce => wallJumpForce;
+     [SerializeField] private LayerMask wallMask;
+     
      
      public enum DashType
      {
@@ -69,6 +75,7 @@ public class Player : MonoBehaviour
      public float currentSpeed {get; set;}
      public float attackDashTime { get;  set; }
      public int AttackStep { get; set; }
+     public bool isRight {get; set;}
      
      
      private bool isJumped;
@@ -79,6 +86,7 @@ public class Player : MonoBehaviour
      public bool isAttack {get; private set;}
      public bool isSlash {get; private set;}
      public bool isLocked {get; private set;}
+     public bool isWallJump {get; private set;}
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
@@ -145,6 +153,8 @@ public class Player : MonoBehaviour
                AttackCollider();
                isAttack = true;
           }
+
+          HangableRay();
           
           stateMachine.Update();
      }
@@ -166,7 +176,42 @@ public class Player : MonoBehaviour
           Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(attackVec, boxSize, 0);
           foreach (Collider2D collider2D in collider2Ds)
           {
-               Debug.Log(collider2D.tag);
+              // Debug.Log(collider2D.tag);
+          }
+     }
+
+     private void HangableRay()
+     {
+          int layerMask = LayerMask.GetMask("HangableWall");
+          RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up, 2.5f, layerMask);
+          Debug.DrawLine(transform.position, transform.position + Vector3.up * 2.5f, Color.red);
+          if (hit.collider != null)
+          {
+               Debug.Log("Ray Hit! " + hit.collider.name);
+               SetHang(true);
+          }
+          else
+          {
+               Debug.Log("Ray Miss!");
+               SetHang(false);
+          }
+     }
+     
+     public void WallRay()
+     {
+          int layerMask = LayerMask.GetMask("Ground");
+          Vector2 rayDir = (Vector2.down + (isRight ? Vector2.left : Vector2.right)).normalized;
+          RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDir, 2.5f, layerMask);
+          Debug.DrawLine(transform.position, transform.position + (Vector3)rayDir * 2.5f, Color.red);
+          if (hit.collider != null)
+          {
+               Debug.Log("Ray Hit! " + hit.collider.name);
+               SetGrounded(true);
+          }
+          else
+          {
+               Debug.Log("Ray Miss!");
+               SetGrounded(false);
           }
      }
 
@@ -212,6 +257,11 @@ public class Player : MonoBehaviour
      public void SetLock(bool locked)
      {
           isLocked = locked;
+     }
+
+     public void SetWallJump(bool wallJump)
+     {
+          isWallJump = wallJump;
      }
 
      public void SlashEnd()

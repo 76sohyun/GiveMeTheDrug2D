@@ -183,6 +183,15 @@ public class Player_Climb : PlayerState
     public override void Update()
     {
         float inputY = Input.GetAxis("Vertical");
+        if (player.isClimb)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                player.SetClimb(false);
+                player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Jump]);
+            }
+        }
+        
         if(Mathf.Abs(inputY) < 0.1f)
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.ClimbIdle]);
         if(player.isGrounded)
@@ -191,6 +200,10 @@ public class Player_Climb : PlayerState
 
     public override void FixedUpdate()
     {
+        if (!player.isClimb)
+        {
+            return;
+        }
         float ver = Input.GetAxis("Vertical");
         player.rigid.velocity = new Vector2(player.rigid.velocity.x, ver * player.MoveSpeed);
     }
@@ -207,6 +220,7 @@ public class Player_ClimbIdle : PlayerState
         player.animator.Play(player.ClimbIdle_Hash);
         player.rigid.velocity = Vector2.zero;
         player.rigid.gravityScale = 0f;
+        player.SetClimb(true);
     }
 
     public override void Update()
@@ -215,6 +229,12 @@ public class Player_ClimbIdle : PlayerState
         if (Mathf.Abs(inputY) > 0.1f)
         {
             player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Climb]);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            player.SetClimb(false);
+            player.stateMachine.ChangeState(player.stateMachine.StateDic[Estate.Jump]);
         }
     }
 

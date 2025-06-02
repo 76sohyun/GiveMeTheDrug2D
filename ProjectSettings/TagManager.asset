@@ -19,8 +19,8 @@ TagManager:
   - Monster
   - Bullet
   - Wall
-  - 
-  - 
+  - HangableWall
+  - Ground
   - 
   - 
   - 
@@ -44,4 +44,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 2528463799
+    locked: 0
+  - name: Tile
+    uniqueID: 4150589849
+    locked: 0
+  - name: Monster
+    uniqueID: 589107453
     locked: 0
