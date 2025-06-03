@@ -14,7 +14,9 @@ public class Drone : MonoBehaviour
     [SerializeField] private float detectRange;
     [SerializeField] private LayerMask targetLayer;
     [SerializeField] private DroneShoot droneShoot;
+    [SerializeField] private int MaxHealth;
 
+    private int CurHealth;
     private StateMachine stateMachine;
     public Rigidbody2D rigid{get; private set;}
     public Animator animator{get; private set;}
@@ -28,6 +30,7 @@ public class Drone : MonoBehaviour
     private void Awake()
     {
         StateMachineInit();
+        CurHealth = MaxHealth;
     }
 
     private void Start()
@@ -60,6 +63,16 @@ public class Drone : MonoBehaviour
     public void Back()
     {
         StartCoroutine(CoTurnBack());
+    }
+
+    public void OnDamage(int damage)
+    {
+        CurHealth -= damage;
+
+        if (CurHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private IEnumerator CoTurnBack()

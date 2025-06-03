@@ -318,6 +318,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   healTime: 10
+  AttackDamage: 1
 --- !u!114 &3363654791353392915
 MonoBehaviour:
   m_ObjectHideFlags: 0

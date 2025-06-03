@@ -22,14 +22,5 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GetComponent<PooledObject>().ReturnPool();
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            Player hitPlayer = collision.gameObject.GetComponent<Player>();
-            if (hitPlayer != null)
-            {
-                hitPlayer.OnDamage(damage);
-                Debug.Log(hitPlayer.CurHealth);   
-            }
-        }
     }
 }

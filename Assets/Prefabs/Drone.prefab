@@ -227,6 +227,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   droneShoot: {fileID: 2125395640197355060}
+  MaxHealth: 1
 --- !u!114 &2125395640197355060
 MonoBehaviour:
   m_ObjectHideFlags: 0

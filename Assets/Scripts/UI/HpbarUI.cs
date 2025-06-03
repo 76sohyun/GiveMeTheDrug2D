@@ -17,17 +17,6 @@ public class HpbarUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (player.CurHealth > 0)
-            {
-                player.CurHealth--;
-            }
-            else
-            {
-                player.CurHealth = 0;
-            }
-        }
         imsi = (float) player.CurHealth / (float)player.maxHealth;
         HandleHp();
     }

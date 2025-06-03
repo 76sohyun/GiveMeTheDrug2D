@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
      [SerializeField] private Vector2 offset;
      [SerializeField] private LayerMask wallMask;
      [SerializeField] private float healTime;
+     [SerializeField] private int AttackDamage;
      
      public enum DashType
      {
@@ -78,6 +79,7 @@ public class Player : MonoBehaviour
      public float attackDashTime { get;  set; }
      public int AttackStep { get; set; }
      public bool isRight {get; set;}
+     public bool isDamaged {get; private set;}
      
      
      private bool isJumped;
@@ -89,6 +91,7 @@ public class Player : MonoBehaviour
      public bool isSlash {get; private set;}
      public bool isLocked {get; private set;}
      public bool isWallJump {get; private set;}
+     private bool HasHit = false;
    
      public readonly int Idle_Hash = Animator.StringToHash("Idle");
      public readonly int Run_Hash = Animator.StringToHash("Run");
@@ -190,6 +193,7 @@ public class Player : MonoBehaviour
      public void OnDamage(int damage)
      {
           CurHealth -= damage;
+          isDamaged = true;
 
           if (CurHealth <= 0)
           {
@@ -204,6 +208,8 @@ public class Player : MonoBehaviour
 
      public void AttackCollider()
      {
+          if (!(isAttack || isSlash)) return;
+          if (HasHit) return;    
           Vector2 attackVec = attackPos.position;
 
           if (spriteRenderer.flipX)
@@ -214,8 +220,33 @@ public class Player : MonoBehaviour
           Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(attackVec, boxSize, 0);
           foreach (Collider2D collider2D in collider2Ds)
           {
-              // Debug.Log(collider2D.tag);
+               if (isAttack || isSlash)
+               {
+                    if (collider2D.CompareTag("Monster"))
+                    {
+                         Drone drone = collider2D.GetComponent<Drone>();
+                         if (drone != null)
+                         {
+                              drone.OnDamage(AttackDamage);
+                              Debug.Log("타격!");
+                         }
+                         
+                         Zombie zombie = collider2D.GetComponent<Zombie>();
+                         if (zombie != null)
+                         {
+                              zombie.OnDamage(AttackDamage);
+                         }
+                    }
+               }
           }
+
+          HasHit = true;
+          
+     }
+
+     public void ResetAttackHit()
+     {
+          HasHit = false;
      }
 
      private void HangableRay()
@@ -269,6 +300,11 @@ public class Player : MonoBehaviour
           {
                return false;
           }
+     }
+
+     public void SetDamaged(bool Damage)
+     {
+          isDamaged = Damage;
      }
 
      public void SetGrounded(bool grounded)
@@ -352,6 +388,12 @@ public class Player : MonoBehaviour
                isSlash = true;
                Debug.Log("슬래시공격!!!!!!!!");
           }
+
+          if (collision.gameObject.CompareTag("Bullet"))
+          {
+               OnDamage(1);
+               Debug.Log("공격 1받음");
+          }
      }
 
      private void OnCollisionExit2D(Collision2D collision)
@@ -376,6 +418,11 @@ public class Player : MonoBehaviour
           if (collision.gameObject.CompareTag("Monster") && isSlash)
           {
                isSlash = false;
+          }
+
+          if (collision.gameObject.CompareTag("Bullet"))
+          {
+               isDamaged = false;
           }
      }
      
