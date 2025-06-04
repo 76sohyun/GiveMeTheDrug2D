@@ -42,7 +42,8 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadScene("TutorialScene");
             }
         }
-        if (SceneManager.GetActiveScene().name == "EndingScene")
+        
+        if (SceneManager.GetActiveScene().name == "lastScene")
         {
             if (Input.GetKeyDown(KeyCode.P))
             {

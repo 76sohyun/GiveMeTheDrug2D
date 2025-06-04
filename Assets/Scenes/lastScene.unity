@@ -422,7 +422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetText: {fileID: 1621730534}
-  fullText: "\uB2E4\uC2DC \uC2DC\uC791\uD558\uB824\uBA74 \uB204\uB974\uC138\uC694..."
+  fullText: "\uB2E4\uC2DC \uC2DC\uC791\uD558\uB824\uBA74 P\uB97C \uB204\uB974\uC138\uC694..."
   delay: 0.123
 --- !u!114 &983019740
 MonoBehaviour:
