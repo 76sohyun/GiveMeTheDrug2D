@@ -51,6 +51,10 @@ public class Player : MonoBehaviour
      [SerializeField] private LayerMask wallMask;
      [SerializeField] private float healTime;
      [SerializeField] private int AttackDamage;
+     [SerializeField] private AudioClip[] clip;
+     public AudioClip[] Clip => clip;
+     [SerializeField] private GameObject fadeob;
+     
      
      public enum DashType
      {
@@ -200,10 +204,11 @@ public class Player : MonoBehaviour
                Die();
           }
      }
-     
+
      private void Die()
      {
-          
+          fadeob.SetActive(true);
+          fadeob.GetComponent<MainFade>().Fade("lastScene");
      }
 
      public void AttackCollider()
@@ -393,6 +398,16 @@ public class Player : MonoBehaviour
           {
                OnDamage(1);
                Debug.Log("공격 1받음");
+          }
+
+          if (collision.gameObject.CompareTag("Die"))
+          {
+               Die();
+          }
+
+          if (collision.gameObject.CompareTag("Exit"))
+          {
+               GameManager.instance.Ending();
           }
      }
 

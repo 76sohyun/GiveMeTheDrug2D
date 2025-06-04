@@ -321,6 +321,7 @@ public class Player_Attack1 : PlayerState
     public override void Enter()
     {
         player.animator.Play(player.Attack1_Hash);
+        AudioManager.instance.SFXPlay("Attack1", player.Clip[1]);
         player.AttackStep = 1;
         Debug.Log("공격1에 진입");
         player.AttackTime = 0f;
@@ -359,6 +360,7 @@ public class Player_Attack2 : PlayerState
     public override void Enter()
     {
         player.animator.Play(player.Attack2_Hash);
+        AudioManager.instance.SFXPlay("Attack2", player.Clip[2]);
         player.AttackStep = 2;
         Debug.Log("공격2에 진입");
         player.AttackTime = 0f;
@@ -398,6 +400,7 @@ public class Player_Attack3 : PlayerState
     public override void Enter()
     {
         player.animator.Play(player.Attack3_Hash);
+        AudioManager.instance.SFXPlay("Attack3", player.Clip[3]);
         player.AttackStep = 3;
         Debug.Log("공격3에 진입");
         player.AttackTime = 0f;
@@ -431,6 +434,7 @@ public class Player_Attack3 : PlayerState
 public class Player_Slash : PlayerState
 {
     public Player_Slash(Player _player) : base(_player) { HasPhysics = true; }
+    
 
     public override void Enter()
     {
@@ -446,6 +450,7 @@ public class Player_Slash : PlayerState
         if (!player.isSlash)
         {
             player.SetSlash(true);
+            AudioManager.instance.SFXPlay("Slash", player.Clip[0]);
         }
     }
 

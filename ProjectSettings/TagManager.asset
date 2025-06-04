@@ -9,6 +9,9 @@ TagManager:
   - HangableWall
   - Monster
   - Car
+  - Bullet
+  - Die
+  - Exit
   layers:
   - Default
   - TransparentFX
